@@ -1,0 +1,28 @@
+name: 'Fetch news'
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    name: 'Deploy'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone the repository
+        run: git clone https://github.com/responsible-ai-collaborative/nlp-monitoring.git
+
+      - name: Install dependencies
+        run: pip3 install -r requirements.txt
+        working-directory: ./nlp-monitoring
+
+      - name: Install NLTK packages
+        run: python3 -c 'import nltk; nltk.download("punkt")'
+
+      - name: fetch-news.py
+        run: python3 fetch-news.py
+        working-directory: ./nlp-monitoring
+        env:
+          MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
